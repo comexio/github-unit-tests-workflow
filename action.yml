@@ -1,0 +1,29 @@
+name: Run Unit Tests
+
+description: Run Unit Tests
+
+inputs:
+  CICD_GITHUB_TOKEN:
+    required: true
+    description: TOKEN
+
+runs:
+  using: "composite"
+  steps:
+  - name: Baixando código do repositório
+    uses: actions/checkout@v4
+    with:
+      fetch-depth: 0
+
+  - name: Adicionando Github Token ao Composer
+    env:
+      CICD_GITHUB_TOKEN: ${{ inputs.CICD_GITHUB_TOKEN }}
+    run: |
+      cat <<-EOF > auth.json
+      {
+        "github-oauth": {
+          "github.com": "${CICD_GITHUB_TOKEN}"
+        }
+      }
+      EOF
+    shell: bash
