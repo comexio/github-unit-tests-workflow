@@ -35,3 +35,8 @@ runs:
       echo "::add-matcher::.github/matchers/phpunit.json"
       echo "::add-matcher::.github/matchers/composer.json"
     shell: bash
+
+  - name: Configurando problem matchers (Third-Party Action)
+    uses: mheap/phpunit-matcher-action@b625085ceada5aad0d5b58a87acffae63467d5b1
+    with:
+      base_path: /var/www/app
