@@ -6,6 +6,15 @@ inputs:
   CICD_GITHUB_TOKEN:
     required: true
     description: TOKEN
+  CICD_AWS_KEY:
+    required: true
+    description: KEY
+  CICD_AWS_SECRET:
+    required: true
+    description: SECRET
+  REGION:
+    required: true
+    description: REGION
 
 runs:
   using: "composite"
@@ -40,3 +49,34 @@ runs:
     uses: mheap/phpunit-matcher-action@b625085ceada5aad0d5b58a87acffae63467d5b1
     with:
       base_path: /var/www/app
+
+  - name: Configurando credenciais da AWS
+    uses: aws-actions/configure-aws-credentials@v4
+    with:
+      aws-access-key-id: ${{ inputs.CICD_AWS_KEY }}
+      aws-secret-access-key: ${{ inputs.CICD_AWS_SECRET }}
+      aws-region: ${{ inputs.REGION }}
+
+  - name: Autenticando no ECR
+    uses: docker/login-action@v3
+    with:
+      registry: 081818032380.dkr.ecr.sa-east-1.amazonaws.com
+
+  - name: Iniciando os containers
+    run: bash .infra/test/up.sh
+    shell: bash
+
+  - name: Executando o PHPUnit
+    run: docker exec international-logistic-captation-app bash -c "vendor/bin/phpunit --teamcity --coverage-clover='report/coverage.xml' --log-junit='report/report.junit.xml'"
+    shell: bash
+
+  - name: Compactando relatórios do PHPUnit
+    run: tar -czf phpunit-reports.tar.gz ./report/
+    shell: bash
+
+  - name: Armazenando relatórios do PHPUnit como artefato
+    uses: actions/upload-artifact@v4
+    with:
+      name: phpunit-reports
+      path: phpunit-reports.tar.gz
+      retention-days: 1
