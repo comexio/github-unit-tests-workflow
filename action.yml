@@ -27,3 +27,11 @@ runs:
       }
       EOF
     shell: bash
+
+  - name: Configurando problem matchers
+    run: |
+      echo "::add-matcher::.github/matchers/generic.json"
+      echo "::add-matcher::.github/matchers/php.json"
+      echo "::add-matcher::.github/matchers/phpunit.json"
+      echo "::add-matcher::.github/matchers/composer.json"
+    shell: bash
