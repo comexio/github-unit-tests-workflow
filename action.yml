@@ -15,6 +15,9 @@ inputs:
   REGION:
     required: true
     description: REGION
+  APP_CONTAINER_NAME:
+    required: true
+    description: Name Containers php unit
 
 runs:
   using: "composite"
@@ -67,7 +70,7 @@ runs:
     shell: bash
 
   - name: Executando o PHPUnit
-    run: docker exec international-logistic-captation-app bash -c "vendor/bin/phpunit --teamcity --coverage-clover='report/coverage.xml' --log-junit='report/report.junit.xml'"
+    run: docker exec ${{ inputs.APP_CONTAINER_NAME }} bash -c "vendor/bin/phpunit --teamcity --coverage-clover='report/coverage.xml' --log-junit='report/report.junit.xml'"
     shell: bash
 
   - name: Compactando relatórios do PHPUnit
